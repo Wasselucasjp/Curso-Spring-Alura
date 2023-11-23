@@ -61,11 +61,10 @@ public class TopicosController {
 
     @GetMapping("/{id}")
     public ResponseEntity<DetalhamentoDoTopicoDto> detalhar(@PathVariable Long id) {
-        Optional<Topico> topico = topicoRepository.findById(id);
-        if (topico.isPresent()) {
-            return ResponseEntity.ok(new DetalhamentoDoTopicoDto(topico.get()));
-        }
-        return ResponseEntity.notFound().build();
+        Optional<Topico> topico = topicoRepository.findById(id);   
+        return topico.isPresent()
+            ?ResponseEntity.ok(new DetalhamentoDoTopicoDto(topico.get()))
+            : ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
