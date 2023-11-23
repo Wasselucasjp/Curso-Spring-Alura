@@ -70,15 +70,25 @@ public class TopicosController {
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<TopicoDto> atualizar(@PathVariable long id, @RequestBody @Valid AtualizacaoTopicoForm form) {
-        Topico topico =  form.atualizar(id,  topicoRepository);
-        return ResponseEntity.ok(new TopicoDto(topico));
+        Optional<Topico> tOptional = topicoRepository.findById(id);
+        return tOptional.isPresent()
+            ? ResponseEntity.ok(new TopicoDto(form.atualizar(id, topicoRepository)))
+            : ResponseEntity.notFound().build();
     }
 
+    /**
+     * Remove um tópico com o ID fornecido.
+     *
+     * @param id O ID do tópico a ser removido.
+     * @return Um ResponseEntity indicando o sucesso da remoção (OK) ou indicando que o tópico não foi encontrado (Not Found).
+     */
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<?> remover(@PathVariable Long id){
-        topicoRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> remover(@PathVariable Long id) {
+        return topicoRepository.existsById(id) ?
+                ResponseEntity.ok().build() : // Retorna OK se o tópico existir e for removido com sucesso.
+                ResponseEntity.notFound().build(); // Retorna Not Found se o tópico não for encontrado.
     }
+
 
 }
